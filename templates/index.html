@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Weather</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>City Weather Manager</h1>
+    <form action="/cities/add" method="post">
+        <input type="text" name="name" placeholder="City Name" required>
+        <input type="number" step="0.01" name="latitude" placeholder="Latitude" required>
+        <input type="number" step="0.01" name="longitude" placeholder="Longitude" required>
+        <button type="submit">Add City</button>
+    </form>
+    <form action="/cities/reset" method="post" style="margin-top: 20px;">
+        <button type="submit">Reset Cities</button>
+    </form>
+    <form action="/cities/update" method="post" style="margin-top: 20px;">
+        <button type="submit">Update Weather</button>
+    </form>
+    <ul>
+        {% for city in cities %}
+        <li>
+            {{ city.name }} - {{ city.temperature if city.temperature else "No data" }} °C
+            <form action="/cities/remove/{{ city.id }}" method="post" style="display:inline;">
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
