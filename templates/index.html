@@ -3,32 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>City Weather</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>City Weather Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 0;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        /* 表单区域 */
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        /* 按钮样式 */
+        .buttons-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+
+        /* 城市列表 */
+        .cities-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .cities-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cities-count {
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .city-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+
+        .city-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+
+        .city-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .city-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .city-coords {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .city-temperature {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .no-data {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .city-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #95a5a6;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .buttons-group {
+                flex-direction: column;
+            }
+            
+            .city-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .city-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>City Weather Manager</h1>
-    <form action="/cities/add" method="post">
-        <input type="text" name="name" placeholder="City Name" required>
-        <input type="number" step="0.01" name="latitude" placeholder="Latitude" required>
-        <input type="number" step="0.01" name="longitude" placeholder="Longitude" required>
-        <button type="submit">Add City</button>
-    </form>
-    <form action="/cities/reset" method="post" style="margin-top: 20px;">
-        <button type="submit">Reset Cities</button>
-    </form>
-    <form action="/cities/update" method="post" style="margin-top: 20px;">
-        <button type="submit">Update Weather</button>
-    </form>
-    <ul>
-        {% for city in cities %}
-        <li>
-            {{ city.name }} - {{ city.temperature if city.temperature else "No data" }} °C
-            <form action="/cities/remove/{{ city.id }}" method="post" style="display:inline;">
-                <button type="submit">Remove</button>
+    <div class="container">
+        <header>
+            <h1>🌤️ City Weather Manager</h1>
+            <p class="subtitle">Monitor and manage weather data for your cities</p>
+        </header>
+
+        <!-- 添加城市表单 -->
+        <section class="form-section">
+            <h2 class="form-title">Add New City</h2>
+            <form action="/cities/add" method="post">
+                <div class="form-row">
+                    <input type="text" name="name" class="form-input" placeholder="City Name (e.g., London, Tokyo)" required>
+                    <input type="number" step="0.0001" name="latitude" class="form-input" placeholder="Latitude (e.g., 51.5074)" required>
+                    <input type="number" step="0.0001" name="longitude" class="form-input" placeholder="Longitude (e.g., -0.1278)" required>
+                </div>
+                <button type="submit" class="btn btn-primary">➕ Add City</button>
             </form>
-        </li>
-        {% endfor %}
-    </ul>
+        </section>
+
+        <!-- 控制按钮 -->
+        <section class="form-section">
+            <h2 class="form-title">Actions</h2>
+            <div class="buttons-group">
+                <form action="/cities/update" method="post" style="flex: 1;">
+                    <button type="submit" class="btn btn-secondary">🔄 Update All Weather</button>
+                </form>
+                <form action="/cities/reset" method="post" style="flex: 1;">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Reset all cities to defaults?')">🔄 Reset Cities</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 城市列表 -->
+        <section class="cities-section">
+            <div class="cities-header">
+                <h2 class="form-title">📋 City List</h2>
+                <span class="cities-count">{{ cities|length }} cities</span>
+            </div>
+
+            {% if cities %}
+                {% for city in cities %}
+                <div class="city-item">
+                    <div class="city-info">
+                        <div>
+                            <div class="city-name">{{ city.name }}</div>
+                            <div class="city-coords">
+                                📍 {{ "%.4f"|format(city.latitude) }}, {{ "%.4f"|format(city.longitude) }}
+                            </div>
+                        </div>
+                        <div class="city-temperature">
+                            {% if city.temperature %}
+                                {{ "%.1f"|format(city.temperature) }}°C
+                            {% else %}
+                                <span class="no-data">No data</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="city-actions">
+                        <form action="/cities/remove/{{ city.id }}" method="post" 
+                              onsubmit="return confirm('Remove {{ city.name }}?')">
+                            <button type="submit" class="btn btn-danger btn-small">🗑️ Remove</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <h3>No cities yet</h3>
+                    <p>Add your first city above to get started!</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <script>
+        // 温度颜色效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const tempElements = document.querySelectorAll('.city-temperature');
+            tempElements.forEach(el => {
+                if (!el.querySelector('.no-data')) {
+                    const temp = parseFloat(el.textContent);
+                    if (temp > 30) {
+                        el.style.color = '#e74c3c'; // 热
+                    } else if (temp > 20) {
+                        el.style.color = '#e67e22'; // 暖
+                    } else if (temp > 10) {
+                        el.style.color = '#f39c12'; // 温和
+                    } else if (temp > 0) {
+                        el.style.color = '#3498db'; // 凉
+                    } else {
+                        el.style.color = '#2980b9'; // 冷
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
